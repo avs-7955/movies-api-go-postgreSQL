@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	model "movies-api-go-post/models"
 )
 
 const (
@@ -46,6 +47,31 @@ func init() {
 	_, err = db.Exec(command)
 	CheckError(err)
 	fmt.Println("Movies table created successfully.")
+}
+
+// postgreSQL helpers - file
+
+// insert 1 record
+func insertMovie(movie model.Netflix) {
+	// fmt.Println(movie)
+	ins_sql_statement := `INSERT INTO movies.netflix VALUES ($1, $2, $3) RETURNING id`
+	id := 0
+	// fmt.Println(db)
+	err := db.QueryRow(ins_sql_statement, movie.Id, movie.Movie, movie.Watched).Scan(&id)
+	CheckError(err)
+	fmt.Println("\nRow inserted successfully!")
+	fmt.Println("New record ID is:", id)
+}
+
+// update a movie to watched based on id
+func updateMovie(id int) {
+	upd_sql_statement := `UPDATE movies.netflix SET watched=true WHERE id=$1;`
+	res, err := db.Exec(upd_sql_statement, id)
+	CheckError(err)
+	count, err := res.RowsAffected()
+
+	CheckError(err)
+	fmt.Printf("Rows updated: %v\n", count)
 }
 
 func CheckError(err error) {
