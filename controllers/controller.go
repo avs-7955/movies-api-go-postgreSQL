@@ -98,6 +98,26 @@ func deleteMovies() int {
 	return int(count)
 }
 
+// retriving all movies from the database
+func getMovies() []model.Netflix {
+	rtv_sql_statement := `SELECT * FROM movies.netflix;`
+	rows, err := db.Query(rtv_sql_statement)
+	CheckError(err)
+	defer rows.Close()
+
+	// creates placeholder of the returned records
+	movie_records := make([]model.Netflix, 0)
+
+	// storing the rows into structures
+	for rows.Next() {
+		record := model.Netflix{}
+		err = rows.Scan(&record.Id, &record.Movie, &record.Watched)
+		CheckError(err)
+		movie_records = append(movie_records, record)
+	}
+	return movie_records
+}
+
 func CheckError(err error) {
 	if err != nil {
 		log.Fatal(err)
