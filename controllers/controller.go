@@ -57,6 +57,7 @@ func insertMovie(movie model.Netflix) {
 	ins_sql_statement := `INSERT INTO movies.netflix VALUES ($1, $2, $3) RETURNING id`
 	id := 0
 	// fmt.Println(db)
+	// returns id of the record being created
 	err := db.QueryRow(ins_sql_statement, movie.Id, movie.Movie, movie.Watched).Scan(&id)
 	CheckError(err)
 	fmt.Println("\nRow inserted successfully!")
@@ -72,6 +73,29 @@ func updateMovie(id int) {
 
 	CheckError(err)
 	fmt.Printf("Rows updated: %v\n", count)
+}
+
+// delete a movie based on id
+func deleteMovie(id int) {
+	del_sql_statement := `DELETE FROM movies.netflix WHERE id=$1;`
+	res, err := db.Exec(del_sql_statement, id)
+	CheckError(err)
+	count, err := res.RowsAffected()
+
+	CheckError(err)
+	fmt.Printf("Rows deleted: %v\n", count)
+}
+
+// delete all movies
+func deleteMovies() int {
+	del_sql_statement := `DELETE FROM movies.netflix;`
+	res, err := db.Exec(del_sql_statement)
+	CheckError(err)
+	count, err := res.RowsAffected()
+
+	CheckError(err)
+	fmt.Printf("No. of movie records deleted: %v\n", count)
+	return int(count)
 }
 
 func CheckError(err error) {
