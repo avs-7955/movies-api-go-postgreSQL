@@ -2,9 +2,12 @@ package controller
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	model "movies-api-go-post/models"
+	"net/http"
 )
 
 const (
@@ -116,6 +119,34 @@ func getMovies() []model.Netflix {
 		movie_records = append(movie_records, record)
 	}
 	return movie_records
+}
+
+// actual controllers - file
+func GetMovies(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get all movies")
+	w.Header().Set("Content-Type", "application/json") // setting headers to the content
+	allmovies := getMovies()
+	json.NewEncoder(w).Encode(allmovies)
+}
+
+func CreateMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Insert a movie")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "POST") // will only accept post requests
+	// if the data received is empty
+	if r.Body == nil {
+		json.NewEncoder(w).Encode("Please send some data")
+		return
+	}
+	var movie model.Netflix
+	err := json.NewDecoder(r.Body).Decode(&movie) // decoding the data received
+	CheckError(err)
+	// rand.Seed(time.Now().UnixNano())
+	movie.Id = rand.Intn(500) // adding a primary key
+	fmt.Println(movie)
+
+	insertMovie(movie)
+	json.NewEncoder(w).Encode(movie)
 }
 
 func CheckError(err error) {
