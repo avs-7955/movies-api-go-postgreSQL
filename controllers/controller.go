@@ -8,6 +8,9 @@ import (
 	"math/rand"
 	model "movies-api-go-post/models"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -147,6 +150,43 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 
 	insertMovie(movie)
 	json.NewEncoder(w).Encode(movie)
+}
+
+func MarkAsWatched(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Mark a movie as watched")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "PUT") // will only accept put requests
+
+	// get the id from the request
+	params := mux.Vars(r)
+
+	// converting string to int
+	id, _ := strconv.Atoi(params["id"])
+	updateMovie(id)
+	json.NewEncoder(w).Encode(fmt.Sprintf("Updated movie at id: %s", params["id"]))
+}
+
+func DeleteMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Delete a movie")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "DELETE") // will only accept delete requests
+
+	// get the id from the request
+	params := mux.Vars(r)
+
+	// converting string to int
+	id, _ := strconv.Atoi(params["id"])
+	deleteMovie(id)
+	json.NewEncoder(w).Encode(fmt.Sprintf("Deleted movie at id: %s", params["id"]))
+}
+
+func DeleteMovies(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Delete the movies")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "DELETE") // will only accept delete requests
+
+	count := deleteMovies()
+	json.NewEncoder(w).Encode(fmt.Sprintf("Total movies deleted are: %v", count))
 }
 
 func CheckError(err error) {
