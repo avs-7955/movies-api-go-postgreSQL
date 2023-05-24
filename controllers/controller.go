@@ -11,14 +11,15 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 const (
 	host     = "localhost"
 	port     = 5432
-	user     = "postgres"
-	password = ""
-	dbname   = "postgres"
+	user     = "postgres" // accessing the default user
+	password = ""         // enter the password of the user
+	dbname   = "postgres" // accessing your default database
 )
 
 var db *sql.DB // pointer to the database
